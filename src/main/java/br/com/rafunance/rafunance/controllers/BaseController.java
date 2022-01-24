@@ -1,9 +1,7 @@
 package br.com.rafunance.rafunance.controllers;
 
-import br.com.rafunance.rafunance.errors.exceptions.IdNullException;
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
 import br.com.rafunance.rafunance.models.dtos.BaseDto;
-import br.com.rafunance.rafunance.models.entities.BaseEntity;
 import br.com.rafunance.rafunance.models.filters.BaseFilter;
 import br.com.rafunance.rafunance.services.IBaseService;
 import org.modelmapper.ModelMapper;
@@ -18,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BaseController<E extends BaseEntity, D extends BaseDto, F extends BaseFilter> {
+public class BaseController<E, D, F extends BaseFilter> {
 
     protected IBaseService<E> service;
     protected ModelMapper mapper;
@@ -29,7 +27,7 @@ public class BaseController<E extends BaseEntity, D extends BaseDto, F extends B
     }
 
     @GetMapping
-    public ResponseEntity<List<BaseDto>> getAll() {
+    public ResponseEntity<List<Object>> getAll() {
         return ResponseEntity.ok().body(service.findAll()
                 .stream()
                 .map(this::convertToDto)
@@ -37,27 +35,24 @@ public class BaseController<E extends BaseEntity, D extends BaseDto, F extends B
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseDto> getById(@PathVariable Long id) {
+    public ResponseEntity<Object> getById(@PathVariable Long id) {
         return service.findById(id).map(obj -> {
-            BaseDto dto = this.convertToDto(obj);
+            Object dto = this.convertToDto(obj);
             return ResponseEntity.ok().body(dto);
         }).orElseThrow(() -> new NotFoundException("Objeto não encontrado"));
     }
 
     @PostMapping
-    public ResponseEntity<BaseDto> insert(@RequestBody BaseDto dto) {
-        BaseEntity entity = this.convertToEntity(dto);
+    public ResponseEntity<Object> insert(@RequestBody BaseDto dto) {
+        Object entity = this.convertToEntity((D) dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 convertToDto(service.save((E) entity))
         );
     }
 
-    @PutMapping
-    public ResponseEntity<BaseDto> update(@RequestBody BaseDto dto) {
-        if(dto.getId() == null){
-            throw new IdNullException("Objeto deve possui identificador");
-        }
-        BaseEntity entity = this.convertToEntity(dto);
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> update(@RequestBody D dto) {
+        Object entity = this.convertToEntity(dto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(
                 convertToDto(service.update((E) entity))
         );
@@ -70,7 +65,7 @@ public class BaseController<E extends BaseEntity, D extends BaseDto, F extends B
     }
 
     @GetMapping("filter")
-    public ResponseEntity<Page<BaseDto>> getByFilter(
+    public ResponseEntity<Page<Object>> getByFilter(
             @RequestParam(value = "id", required = false) Long id,
             @RequestParam(value = "descricao", required = false) String descricao,
             @RequestParam(value = "valor", required = false) Double valor,
@@ -78,16 +73,16 @@ public class BaseController<E extends BaseEntity, D extends BaseDto, F extends B
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size
     ) {
-        BaseFilter filter = new BaseFilter(id, descricao, valor, data, PageRequest.of(page, size));
+        F filter = (F) new BaseFilter(id, descricao, valor, data, PageRequest.of(page, size));
         return ResponseEntity.ok().body(service.findByFilter(filter).map(this::convertToDto));
     }
 
-    protected BaseDto convertToDto(E entity) {
-        return mapper.map(entity, BaseDto.class);
+    protected Object convertToDto(E entity) {
+        return mapper.map(entity, Object.class);
     }
 
-    protected BaseEntity convertToEntity(BaseDto dto) {
-        return mapper.map(dto, BaseEntity.class);
+    protected Object convertToEntity(D dto) {
+        return mapper.map(dto, Object.class);
     }
 
 }

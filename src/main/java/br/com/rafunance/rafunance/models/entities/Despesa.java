@@ -1,5 +1,6 @@
 package br.com.rafunance.rafunance.models.entities;
 
+import br.com.rafunance.rafunance.models.DespesaCategoria;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "TAB_DESPESA")
-public class Despesa extends BaseEntity {
+public class Despesa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,5 +25,6 @@ public class Despesa extends BaseEntity {
     private Double valor;
     @Column(nullable = false)
     private LocalDate data;
-
+    @Enumerated(EnumType.STRING)
+    private DespesaCategoria categoria;
 }

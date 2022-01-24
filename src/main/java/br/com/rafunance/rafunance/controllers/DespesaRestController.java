@@ -2,7 +2,6 @@ package br.com.rafunance.rafunance.controllers;
 
 import br.com.rafunance.rafunance.models.dtos.DespesaDto;
 import br.com.rafunance.rafunance.models.entities.Despesa;
-import br.com.rafunance.rafunance.models.filters.BaseFilter;
 import br.com.rafunance.rafunance.models.filters.DespesaFilter;
 import br.com.rafunance.rafunance.services.IDespesaService;
 import org.modelmapper.ModelMapper;

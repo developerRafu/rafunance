@@ -1,5 +1,6 @@
 package br.com.rafunance.rafunance.configs;
 
+import br.com.rafunance.rafunance.models.DespesaCategoria;
 import br.com.rafunance.rafunance.models.entities.Despesa;
 import br.com.rafunance.rafunance.models.entities.Receita;
 import br.com.rafunance.rafunance.repositories.DespesaRepository;
@@ -23,7 +24,7 @@ public class DbConfig {
     @Bean(name = "Fill db")
     public boolean fillDb() {
         Receita receita = new Receita(null, "Salário", 4000.0, LocalDate.of(2022, 2, 1));
-        Despesa despesa = new Despesa(null, "Prime", 10.0, LocalDate.of(2022, 2, 1));
+        Despesa despesa = new Despesa(null, "Prime", 10.0, LocalDate.of(2022, 2, 1), DespesaCategoria.LAZER);
 
         receitaRepository.save(receita);
         despesaRepository.save(despesa);

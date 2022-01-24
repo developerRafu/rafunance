@@ -7,13 +7,14 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "TAB_RECEITA")
-public class Receita extends BaseEntity {
+public class Receita {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

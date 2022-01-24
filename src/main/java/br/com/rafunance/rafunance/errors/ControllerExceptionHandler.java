@@ -2,6 +2,7 @@ package br.com.rafunance.rafunance.errors;
 
 import br.com.rafunance.rafunance.errors.exceptions.ConcurrentDespesaException;
 import br.com.rafunance.rafunance.errors.exceptions.IdNullException;
+import br.com.rafunance.rafunance.errors.exceptions.InvalidCategoryException;
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
 import br.com.rafunance.rafunance.errors.models.StandartError;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,13 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(ConcurrentDespesaException.class)
     public ResponseEntity<StandartError> notFoundExceptionHandler(ConcurrentDespesaException ex, HttpServletRequest res) {
         HttpStatus status = HttpStatus.NOT_ACCEPTABLE;
+        StandartError err = new StandartError(ex.getMessage(), status, status.value(), System.currentTimeMillis());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(InvalidCategoryException.class)
+    public ResponseEntity<StandartError> notFoundExceptionHandler(InvalidCategoryException ex, HttpServletRequest res) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         StandartError err = new StandartError(ex.getMessage(), status, status.value(), System.currentTimeMillis());
         return ResponseEntity.status(status).body(err);
     }
