@@ -1,10 +1,9 @@
 package br.com.rafunance.rafunance.errors;
 
 import br.com.rafunance.rafunance.errors.exceptions.ConcurrentDespesaException;
-import br.com.rafunance.rafunance.errors.models.StandartError;
 import br.com.rafunance.rafunance.errors.exceptions.IdNullException;
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
-import br.com.rafunance.rafunance.errors.exceptions.NullFieldException;
+import br.com.rafunance.rafunance.errors.models.StandartError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,10 +27,11 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(NullFieldException.class)
-    public ResponseEntity<StandartError> notFoundExceptionHandler(NullFieldException ex, HttpServletRequest res) {
+    @ExceptionHandler(ClassCastException.class)
+    public ResponseEntity<StandartError> notFoundExceptionHandler(ClassCastException ex, HttpServletRequest res) {
         HttpStatus status = HttpStatus.NOT_ACCEPTABLE;
-        StandartError err = new StandartError(ex.getMessage(), status, status.value(), System.currentTimeMillis());
+        String msg = "Campos inválidos";
+        StandartError err = new StandartError(msg, status, status.value(), System.currentTimeMillis());
         return ResponseEntity.status(status).body(err);
     }
 

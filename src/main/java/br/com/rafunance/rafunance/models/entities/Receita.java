@@ -17,8 +17,11 @@ public class Receita extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String descricao;
+    @Column(nullable = false)
     private Double valor;
+    @Column(nullable = false)
     private LocalDate data;
 
 }
