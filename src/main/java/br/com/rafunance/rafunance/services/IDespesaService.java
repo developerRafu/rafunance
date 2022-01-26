@@ -7,5 +7,4 @@ import java.util.Optional;
 
 public interface IDespesaService extends IBaseService<Despesa, DespesaFilter> {
     Optional<Despesa> findByDescricaoAndDateRange(Despesa despesa);
-
 }
