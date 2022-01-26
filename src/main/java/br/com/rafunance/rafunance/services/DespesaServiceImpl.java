@@ -2,7 +2,9 @@ package br.com.rafunance.rafunance.services;
 
 import br.com.rafunance.rafunance.errors.exceptions.ConcurrentDespesaException;
 import br.com.rafunance.rafunance.models.entities.Despesa;
+import br.com.rafunance.rafunance.models.entities.Receita;
 import br.com.rafunance.rafunance.models.filters.BaseFilter;
+import br.com.rafunance.rafunance.models.filters.DespesaFilter;
 import br.com.rafunance.rafunance.repositories.DespesaRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.cfg.NotYetImplementedException;
@@ -52,8 +54,15 @@ public class DespesaServiceImpl implements IDespesaService {
     }
 
     @Override
-    public Page<Despesa> findByFilter(BaseFilter filter) {
-        throw new NotYetImplementedException("Método não implementado");
+    public Page<Despesa> findByFilter(DespesaFilter filter) {
+        return repository.findByFilter(
+                filter.getId(),
+                filter.getDescricao(),
+                filter.getData(),
+                filter.getValor(),
+                filter.getCategoria(),
+                filter.getPageable()
+        );
     }
 
     @Override

@@ -24,9 +24,13 @@ public enum DespesaCategoria {
         this.desc = desc;
     }
 
-    public static DespesaCategoria valueOf(int id) {
-        return Arrays.stream(DespesaCategoria.values())
-                .filter(despesaCategoria -> despesaCategoria.getId() == id)
-                .findFirst().orElseThrow(() -> new InvalidCategoryException("Categoria inválida"));
+    public static DespesaCategoria valueOf(Integer id) {
+        try {
+            return Arrays.stream(DespesaCategoria.values())
+                    .filter(despesaCategoria -> id.equals(despesaCategoria.getId()))
+                    .findFirst().orElseThrow(() -> new InvalidCategoryException("Categoria inválida"));
+        } catch (NullPointerException ex) {
+            return null;
+        }
     }
 }

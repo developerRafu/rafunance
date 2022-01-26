@@ -1,15 +1,16 @@
 package br.com.rafunance.rafunance.services;
 
 import br.com.rafunance.rafunance.models.entities.Receita;
-import br.com.rafunance.rafunance.models.filters.BaseFilter;
+import br.com.rafunance.rafunance.models.filters.ReceitaFilter;
 import br.com.rafunance.rafunance.repositories.ReceitaRepository;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 @Service
 public class ReceitaServiceImpl implements IReceitaService {
 
@@ -42,7 +43,18 @@ public class ReceitaServiceImpl implements IReceitaService {
     }
 
     @Override
-    public Page<Receita> findByFilter(BaseFilter filter) {
-        throw new NotYetImplementedException("Método não implementado");
+    public Page<Receita> findByFilter(ReceitaFilter filter) {
+        return repository.findByFilter(
+                filter.getId(),
+                filter.getDescricao(),
+                filter.getData(),
+                filter.getValor(),
+                filter.getPageable()
+        );
+    }
+
+    @Override
+    public List<Receita> findByDateRange(LocalDate dateAsFirstDayOfMonth, LocalDate dateAsLastDayOfMonth) {
+        return repository.findByDateRange(dateAsFirstDayOfMonth, dateAsLastDayOfMonth);
     }
 }

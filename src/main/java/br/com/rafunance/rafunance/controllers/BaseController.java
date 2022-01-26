@@ -1,7 +1,6 @@
 package br.com.rafunance.rafunance.controllers;
 
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
-import br.com.rafunance.rafunance.models.dtos.BaseDto;
 import br.com.rafunance.rafunance.models.filters.BaseFilter;
 import br.com.rafunance.rafunance.services.IBaseService;
 import org.modelmapper.ModelMapper;
@@ -18,10 +17,10 @@ import java.util.stream.Collectors;
 
 public class BaseController<E, D, F extends BaseFilter> {
 
-    protected IBaseService<E> service;
+    protected IBaseService<E, F> service;
     protected ModelMapper mapper;
 
-    protected BaseController(IBaseService<E> service, ModelMapper mapper) {
+    protected BaseController(IBaseService<E, F> service, ModelMapper mapper) {
         this.service = service;
         this.mapper = mapper;
     }
@@ -43,7 +42,7 @@ public class BaseController<E, D, F extends BaseFilter> {
     }
 
     @PostMapping
-    public ResponseEntity<Object> insert(@RequestBody BaseDto dto) {
+    public ResponseEntity<Object> insert(@RequestBody Object dto) {
         Object entity = this.convertToEntity((D) dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 convertToDto(service.save((E) entity))
