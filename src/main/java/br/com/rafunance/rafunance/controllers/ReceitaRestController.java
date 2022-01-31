@@ -2,6 +2,7 @@ package br.com.rafunance.rafunance.controllers;
 
 import br.com.rafunance.rafunance.models.dtos.ReceitaDto;
 import br.com.rafunance.rafunance.models.entities.Receita;
+import br.com.rafunance.rafunance.services.BaseService;
 import br.com.rafunance.rafunance.services.DespesaServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
