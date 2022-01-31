@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BaseController<T, D, I> {
-    protected BaseService<T, I> service;
+    protected BaseService service;
     protected ModelMapper mapper;
 
-    public BaseController(BaseService<T, I> service, ModelMapper mapper) {
+    public BaseController(BaseService service, ModelMapper mapper) {
         this.service = service;
         this.mapper = mapper;
     }
@@ -30,8 +30,8 @@ public class BaseController<T, D, I> {
 
     @SneakyThrows
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findById(@PathVariable ID id) {
-        return service.findById(id).map(obj -> {
+    public ResponseEntity<Object> findById(@PathVariable I id) {
+        return (ResponseEntity<Object>) service.findById(id).map(obj -> {
             var dto = this.convertToDTo(obj);
             return ResponseEntity.ok().body(dto);
         }).orElseThrow(() -> new NotFoundException("Objeto não encontrado"));
@@ -40,17 +40,17 @@ public class BaseController<T, D, I> {
     @PostMapping
     public ResponseEntity<Object> insert(@RequestBody Object dto) {
         var obj = convertToEntity(dto);
-        return ResponseEntity.ok().body(service.save((T) obj));
+        return ResponseEntity.ok().body(service.save(obj));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable ID id, @RequestBody T dto) {
+    public ResponseEntity<Object> update(@PathVariable I id, @RequestBody T dto) {
         var obj = convertToEntity(dto);
-        return ResponseEntity.ok().body(service.update(id, (T) obj));
+        return ResponseEntity.ok().body(service.update(id, obj));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable ID id) {
+    public ResponseEntity<Void> delete(@PathVariable I id) {
         service.deleteById(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

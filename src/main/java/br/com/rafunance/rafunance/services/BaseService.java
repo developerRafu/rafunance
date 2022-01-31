@@ -29,7 +29,7 @@ public class BaseService<T, I> {
         return save(obj);
     }
 
-    public void deleteById(ID id) {
+    public void deleteById(I id) {
         repository.deleteById(id);
     }
 }
