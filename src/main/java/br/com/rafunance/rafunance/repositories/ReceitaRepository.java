@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ReceitaRepository extends JpaRepository<Receita, Long> {
+
     @Query("SELECT r FROM Receita r WHERE 1=1 " +
             "AND (:id IS NULL OR r.id = :id) " +
             "AND (:desc IS NULL OR LOWER(r.descricao) LIKE(CONCAT('%',:desc,'%'))) " +
@@ -31,4 +32,11 @@ public interface ReceitaRepository extends JpaRepository<Receita, Long> {
     );
 
     List<Receita> findByDescricao(String desc);
+
+    @Query("SELECT r FROM Receita r WHERE r.data BETWEEN :initialDate AND :lastDate AND r.descricao = :desc")
+    List<Receita> findByDateRangeAndDescricao(
+            @Param("initialDate") LocalDate initialDate,
+            @Param("lastDate") LocalDate lastDate,
+            @Param("desc") String desc
+    );
 }

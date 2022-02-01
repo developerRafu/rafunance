@@ -1,7 +1,7 @@
 package br.com.rafunance.rafunance.services;
 
+import br.com.rafunance.rafunance.errors.exceptions.ConcurrentReceitaException;
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
-import br.com.rafunance.rafunance.models.entities.Despesa;
 import br.com.rafunance.rafunance.models.entities.Receita;
 import br.com.rafunance.rafunance.repositories.ReceitaRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,17 @@ public class ReceitaServiceImpl implements IReceitaService {
 
     @Override
     public Receita save(Receita obj) {
+        verifyIfExistsConcurrentReceita(obj);
         return repository.save(obj);
+    }
+
+    private void verifyIfExistsConcurrentReceita(Receita obj) {
+        LocalDate dateAsFirstDayOfMonth = obj.getData().withDayOfMonth(1);
+        LocalDate dateAsLastDayOfMonth = obj.getData().withDayOfMonth(obj.getData().lengthOfMonth());
+        boolean existsAnotherReceita = !repository.findByDateRangeAndDescricao(dateAsFirstDayOfMonth, dateAsLastDayOfMonth, obj.getDescricao()).isEmpty();
+        if (existsAnotherReceita) {
+            throw new ConcurrentReceitaException("Receita já cadastrada");
+        }
     }
 
     @Override
