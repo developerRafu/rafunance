@@ -11,4 +11,5 @@ public interface IDespesaService {
     Despesa save(Despesa obj);
     Despesa update(Despesa obj, Long id);
     void deleteById(Long id);
+    List<Despesa> findByDesc(String desc);
 }

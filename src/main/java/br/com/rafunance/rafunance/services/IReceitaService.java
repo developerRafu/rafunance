@@ -11,4 +11,5 @@ public interface IReceitaService {
     Receita save(Receita obj);
     Receita update(Receita obj, Long id);
     void deleteById(Long id);
+    List<Receita> findByDesc(String desc);
 }

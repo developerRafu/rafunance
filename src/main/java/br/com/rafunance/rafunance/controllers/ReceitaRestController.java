@@ -1,6 +1,7 @@
 package br.com.rafunance.rafunance.controllers;
 
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
+import br.com.rafunance.rafunance.models.dtos.DespesaDto;
 import br.com.rafunance.rafunance.models.dtos.ReceitaDto;
 import br.com.rafunance.rafunance.models.entities.Receita;
 import br.com.rafunance.rafunance.services.IReceitaService;
@@ -50,9 +51,17 @@ public class ReceitaRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<ReceitaDto>> getByDescricao(@RequestParam("desc") String desc) {
+        return ResponseEntity.ok()
+                .body(service.findByDesc(desc).stream()
+                        .map(this::convertToDto)
+                        .collect(Collectors.toList()));
     }
 
     private ReceitaDto convertToDto(Receita obj) {

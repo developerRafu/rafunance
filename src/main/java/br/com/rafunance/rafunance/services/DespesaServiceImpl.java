@@ -48,4 +48,9 @@ public class DespesaServiceImpl implements IDespesaService {
         }
         repository.deleteById(id);
     }
+
+    @Override
+    public List<Despesa> findByDesc(String desc) {
+        return repository.findByDescricao(desc);
+    }
 }

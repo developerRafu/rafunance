@@ -29,4 +29,6 @@ public interface ReceitaRepository extends JpaRepository<Receita, Long> {
             @Param("initialDate") LocalDate initialDate,
             @Param("lastDate") LocalDate lastDate
     );
+
+    List<Receita> findByDescricao(String desc);
 }

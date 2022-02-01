@@ -1,6 +1,7 @@
 package br.com.rafunance.rafunance.services;
 
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
+import br.com.rafunance.rafunance.models.entities.Despesa;
 import br.com.rafunance.rafunance.models.entities.Receita;
 import br.com.rafunance.rafunance.repositories.ReceitaRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +44,10 @@ public class ReceitaServiceImpl implements IReceitaService {
     @Override
     public void deleteById(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<Receita> findByDesc(String desc) {
+        return repository.findByDescricao(desc);
     }
 }

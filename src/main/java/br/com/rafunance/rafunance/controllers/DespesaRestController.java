@@ -2,6 +2,7 @@ package br.com.rafunance.rafunance.controllers;
 
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
 import br.com.rafunance.rafunance.models.dtos.DespesaDto;
+import br.com.rafunance.rafunance.models.dtos.ReceitaDto;
 import br.com.rafunance.rafunance.models.entities.Despesa;
 import br.com.rafunance.rafunance.services.IDespesaService;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,14 @@ public class DespesaRestController {
     public ResponseEntity<Void> delete(@PathVariable Long id){
         service.deleteById(id);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<DespesaDto>> getByDescricao(@RequestParam("desc") String desc) {
+        return ResponseEntity.ok()
+                .body(service.findByDesc(desc).stream()
+                        .map(this::convertToDto)
+                        .collect(Collectors.toList()));
     }
 
     private DespesaDto convertToDto(Despesa obj) {
