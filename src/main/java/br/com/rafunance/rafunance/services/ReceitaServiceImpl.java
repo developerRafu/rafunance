@@ -30,17 +30,8 @@ public class ReceitaServiceImpl implements IReceitaService {
 
     @Override
     public Receita save(Receita obj) {
-        verifyIfExistsConcurrentReceita(obj);
+        verifyIfExistsConcurrentReceita(obj, null);
         return repository.save(obj);
-    }
-
-    private void verifyIfExistsConcurrentReceita(Receita obj) {
-        LocalDate dateAsFirstDayOfMonth = obj.getData().withDayOfMonth(1);
-        LocalDate dateAsLastDayOfMonth = obj.getData().withDayOfMonth(obj.getData().lengthOfMonth());
-        boolean existsAnotherReceita = !repository.findByDateRangeAndDescricao(dateAsFirstDayOfMonth, dateAsLastDayOfMonth, obj.getDescricao()).isEmpty();
-        if (existsAnotherReceita) {
-            throw new ConcurrentReceitaException("Receita já cadastrada");
-        }
     }
 
     @Override
@@ -49,6 +40,7 @@ public class ReceitaServiceImpl implements IReceitaService {
         if (!theresIsEntity) {
             throw new NotFoundException("Objeto não encontrado");
         }
+        verifyIfExistsConcurrentReceita(obj, id);
         return repository.save(obj);
     }
 
@@ -65,5 +57,14 @@ public class ReceitaServiceImpl implements IReceitaService {
     @Override
     public List<Receita> findByDateRange(LocalDate dateAsFirstDayOfMonth, LocalDate dateAsLastDateOfMonth) {
         return repository.findByDateRange(dateAsFirstDayOfMonth, dateAsLastDateOfMonth);
+    }
+
+    public void verifyIfExistsConcurrentReceita(Receita obj, Long id) {
+        LocalDate dateAsFirstDayOfMonth = obj.getData().withDayOfMonth(1);
+        LocalDate dateAsLastDayOfMonth = obj.getData().withDayOfMonth(obj.getData().lengthOfMonth());
+        boolean existsAnotherReceita = !repository.findByDateRangeAndDescricaoAndId(dateAsFirstDayOfMonth, dateAsLastDayOfMonth, obj.getDescricao(), id).isEmpty();
+        if (existsAnotherReceita) {
+            throw new ConcurrentReceitaException("Receita já cadastrada");
+        }
     }
 }

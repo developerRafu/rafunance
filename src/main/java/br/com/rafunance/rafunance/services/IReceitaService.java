@@ -14,4 +14,5 @@ public interface IReceitaService {
     void deleteById(Long id);
     List<Receita> findByDesc(String desc);
     List<Receita> findByDateRange(LocalDate dateAsFirstDayOfMonth, LocalDate dateAsLastDateOfMonth);
+    void verifyIfExistsConcurrentReceita(Receita obj, Long id);
 }

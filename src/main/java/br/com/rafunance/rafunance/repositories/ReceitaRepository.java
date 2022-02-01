@@ -33,10 +33,14 @@ public interface ReceitaRepository extends JpaRepository<Receita, Long> {
 
     List<Receita> findByDescricao(String desc);
 
-    @Query("SELECT r FROM Receita r WHERE r.data BETWEEN :initialDate AND :lastDate AND r.descricao = :desc")
-    List<Receita> findByDateRangeAndDescricao(
+    @Query("SELECT r FROM Receita r WHERE 1=1 " +
+            "AND r.data BETWEEN :initialDate AND :lastDate " +
+            "AND r.descricao = :desc " +
+            "AND (:id IS NULL OR r.id NOT IN (:id))")
+    List<Receita> findByDateRangeAndDescricaoAndId(
             @Param("initialDate") LocalDate initialDate,
             @Param("lastDate") LocalDate lastDate,
-            @Param("desc") String desc
+            @Param("desc") String desc,
+            @Param("id") Long id
     );
 }

@@ -15,8 +15,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -52,10 +51,11 @@ public class ReceitaServiceImplTest {
 
             service.save(receita);
 
-            verify(repository).findByDateRangeAndDescricao(
+            verify(repository).findByDateRangeAndDescricaoAndId(
                     any(LocalDate.class),
                     any(LocalDate.class),
-                    anyString()
+                    anyString(),
+                    anyLong()
             );
         }
 
@@ -64,10 +64,11 @@ public class ReceitaServiceImplTest {
         void it_should_throw_exception_if_exists_receita_in_the_month() {
             Receita receita = mockReceita();
 
-            given(repository.findByDateRangeAndDescricao(
+            given(repository.findByDateRangeAndDescricaoAndId(
                     any(LocalDate.class),
                     any(LocalDate.class),
-                    anyString()))
+                    anyString(),
+                    anyLong()))
                     .willReturn(List.of(receita));
 
             assertThatThrownBy(() -> service.save(receita))
@@ -80,10 +81,11 @@ public class ReceitaServiceImplTest {
             Receita receitaToSave = mockReceita();
             receitaToSave.setId(null);
 
-            given(repository.findByDateRangeAndDescricao(
+            given(repository.findByDateRangeAndDescricaoAndId(
                     any(LocalDate.class),
                     any(LocalDate.class),
-                    anyString()))
+                    anyString(),
+                    anyLong()))
                     .willReturn(List.of());
 
             given(repository.save(receitaToSave)).willReturn(mockReceita());
@@ -92,15 +94,11 @@ public class ReceitaServiceImplTest {
 
             assertThat(result).isNotNull();
         }
+    }
 
-        //TODO: terminar
-        @DisplayName("Deve chamar findById")
-        @Test
-        void it_should_call_findById() {
-            Receita receita = mockReceita();
-            assertThat(receita).isNotNull();
-        }
-
+    @DisplayName("Update")
+    @Nested
+    class UpdateTest {
         @DisplayName("Deve lançar exceção caso não encontre entidade")
         @Test
         void it_should_throw_exception_if_not_found_entity() {
@@ -112,6 +110,86 @@ public class ReceitaServiceImplTest {
 
             assertThatThrownBy(() -> service.update(receita, id))
                     .isInstanceOf(NotFoundException.class);
+        }
+
+        @DisplayName("Deve verificar se existe receitas concorrentes e lançar exceção se existir")
+        @Test
+        void it_should_verify_is_exists_concurrent_receitas_and_throws_exception_if_exists() {
+            Receita receita = mockReceita();
+            Long id = 1L;
+
+            given(repository.findById(id)).willReturn(Optional.of(receita));
+
+            given(repository.findByDateRangeAndDescricaoAndId(
+                    any(LocalDate.class),
+                    any(LocalDate.class),
+                    anyString(),
+                    anyLong()))
+                    .willReturn(List.of(new Receita()));
+
+            assertThatThrownBy(() -> service.update(receita, id))
+                    .isInstanceOf(ConcurrentReceitaException.class);
+        }
+
+        @DisplayName("Deve atualizar entidade no banco de dados")
+        @Test
+        void it_should_update_entity_on_database() {
+            Receita receita = mockReceita();
+
+            Long id = 1L;
+
+            given(repository.findById(id)).willReturn(Optional.of(receita));
+
+            given(repository.findByDateRangeAndDescricaoAndId(
+                    any(LocalDate.class),
+                    any(LocalDate.class),
+                    anyString(),
+                    anyLong()))
+                    .willReturn(List.of());
+
+            given(repository.save(receita)).willReturn(new Receita());
+
+            Receita result = service.update(receita, id);
+
+            assertThat(result).isNotNull();
+        }
+    }
+
+    @DisplayName("verifyIfExistsConcurrentReceita")
+    @Nested
+    class verifyIfExistsConcurrentReceitaTest {
+
+        @DisplayName("Deve chamar o repositório")
+        @Test
+        void it_should_call_repository() {
+            Receita receita = mockReceita();
+            Long id = 1L;
+
+            service.verifyIfExistsConcurrentReceita(receita, id);
+
+            verify(repository).findByDateRangeAndDescricaoAndId(
+                    any(LocalDate.class),
+                    any(LocalDate.class),
+                    anyString(),
+                    anyLong())
+            ;
+        }
+
+        @DisplayName("Deve lançar exceção caso encontre receitas")
+        @Test
+        void it_should_throw_exception_if_finds_receitas() {
+            Receita receita = mockReceita();
+            Long id = 1L;
+
+            given(repository.findByDateRangeAndDescricaoAndId(
+                    any(LocalDate.class),
+                    any(LocalDate.class),
+                    anyString(),
+                    anyLong())
+            ).willReturn(List.of(new Receita()));
+
+            assertThatThrownBy(() -> service.verifyIfExistsConcurrentReceita(receita, id))
+                    .isInstanceOf(ConcurrentReceitaException.class);
         }
     }
 
