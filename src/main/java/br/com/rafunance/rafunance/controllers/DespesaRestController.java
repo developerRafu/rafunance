@@ -2,7 +2,6 @@ package br.com.rafunance.rafunance.controllers;
 
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
 import br.com.rafunance.rafunance.models.dtos.DespesaDto;
-import br.com.rafunance.rafunance.models.dtos.ReceitaDto;
 import br.com.rafunance.rafunance.models.entities.Despesa;
 import br.com.rafunance.rafunance.services.IDespesaService;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +15,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RestController
 @RequestMapping("despesas")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DespesaRestController {
     private final IDespesaService service;
     private final ModelMapper mapper;
@@ -57,7 +56,7 @@ public class DespesaRestController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping()
+    @GetMapping("/filter")
     public ResponseEntity<List<DespesaDto>> getByDescricao(@RequestParam("desc") String desc) {
         return ResponseEntity.ok()
                 .body(service.findByDesc(desc).stream()

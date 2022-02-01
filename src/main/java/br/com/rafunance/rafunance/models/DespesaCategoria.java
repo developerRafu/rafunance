@@ -4,6 +4,8 @@ import br.com.rafunance.rafunance.errors.exceptions.InvalidCategoryException;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 public enum DespesaCategoria {
@@ -33,4 +35,5 @@ public enum DespesaCategoria {
             return null;
         }
     }
+
 }

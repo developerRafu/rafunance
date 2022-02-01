@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 public class ReceitaServiceImpl implements IReceitaService {
 
-    private ReceitaRepository repository;
+    private final ReceitaRepository repository;
 
     @Override
     public List<Receita> findAll() {

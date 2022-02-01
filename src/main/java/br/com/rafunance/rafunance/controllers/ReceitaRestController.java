@@ -16,9 +16,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @RestController
 @RequestMapping("receitas")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReceitaRestController {
     private final IReceitaService service;
     private final ModelMapper mapper;
@@ -57,7 +57,7 @@ public class ReceitaRestController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping()
+    @GetMapping("/filter")
     public ResponseEntity<List<ReceitaDto>> getByDescricao(@RequestParam("desc") String desc) {
         return ResponseEntity.ok()
                 .body(service.findByDesc(desc).stream()
