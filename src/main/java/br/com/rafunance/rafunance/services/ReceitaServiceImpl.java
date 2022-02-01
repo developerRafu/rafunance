@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,5 +50,10 @@ public class ReceitaServiceImpl implements IReceitaService {
     @Override
     public List<Receita> findByDesc(String desc) {
         return repository.findByDescricao(desc);
+    }
+
+    @Override
+    public List<Receita> findByDateRange(LocalDate dateAsFirstDayOfMonth, LocalDate dateAsLastDateOfMonth) {
+        return repository.findByDateRange(dateAsFirstDayOfMonth, dateAsLastDateOfMonth);
     }
 }

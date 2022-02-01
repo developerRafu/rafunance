@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,16 @@ public class ReceitaRestController {
                 .body(service.findByDesc(desc).stream()
                         .map(this::convertToDto)
                         .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/{year}/{month}")
+    public ResponseEntity<List<ReceitaDto>> getByMonth(@PathVariable Integer year, @PathVariable Integer month) {
+        LocalDate dateAsFirstDayOfMonth = LocalDate.of(year, month, 1);
+        LocalDate dateAsLastDateOfMonth = dateAsFirstDayOfMonth.withDayOfMonth(dateAsFirstDayOfMonth.lengthOfMonth());
+
+        return ResponseEntity.ok().body(service.findByDateRange(dateAsFirstDayOfMonth, dateAsLastDateOfMonth).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList()));
     }
 
     private ReceitaDto convertToDto(Receita obj) {
