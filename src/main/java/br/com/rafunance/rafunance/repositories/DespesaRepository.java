@@ -40,4 +40,7 @@ public interface DespesaRepository extends JpaRepository<Despesa, Long> {
     );
 
     List<Despesa> findByDescricao(String desc);
+
+    @Query("SELECT d FROM Despesa d WHERE d.data BETWEEN :initialDate AND :lastDate")
+    List<Despesa> findByDateRange(@Param("initialDate") LocalDate initialDate, @Param("lastDate") LocalDate lastDate);
 }
