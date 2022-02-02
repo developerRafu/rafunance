@@ -2,6 +2,7 @@ package br.com.rafunance.rafunance.services;
 
 import br.com.rafunance.rafunance.errors.exceptions.ConcurrentReceitaException;
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
+import br.com.rafunance.rafunance.mocks.ReceitaMockBuilder;
 import br.com.rafunance.rafunance.models.entities.Receita;
 import br.com.rafunance.rafunance.repositories.ReceitaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +40,7 @@ public class ReceitaServiceImplTest {
         @DisplayName("Deve chamar save do repositório")
         @Test
         void it_should_call_save_from_repository() {
-            Receita receita = new Receita();
+            Receita receita = ReceitaMockBuilder.getMock();
             service.save(receita);
             verify(repository).save(receita);
         }
@@ -47,22 +48,24 @@ public class ReceitaServiceImplTest {
         @DisplayName("Deve chamar findByDateRangeAndDescricao do repositório")
         @Test
         void it_should_call_findByDateRangeAndDescricao_from_repository() {
-            Receita receita = mockReceita();
-
+            Receita receita = ReceitaMockBuilder.getMock();
+            receita.setId(null);
             service.save(receita);
+            LocalDate dateAsFirstDayOfMonth = receita.getData().withDayOfMonth(1);
+            LocalDate dateAsLastDayOfMonth = receita.getData().withDayOfMonth(receita.getData().lengthOfMonth());
 
             verify(repository).findByDateRangeAndDescricaoAndId(
-                    any(LocalDate.class),
-                    any(LocalDate.class),
-                    anyString(),
-                    anyLong()
+                    dateAsFirstDayOfMonth,
+                    dateAsLastDayOfMonth,
+                    receita.getDescricao(),
+                    receita.getId()
             );
         }
 
         @DisplayName("Deve lançar exceção caso já exista receita no mês")
         @Test
         void it_should_throw_exception_if_exists_receita_in_the_month() {
-            Receita receita = mockReceita();
+            Receita receita = ReceitaMockBuilder.getMock();
             Long id = null;
 
             LocalDate dateAsFirstDayOfMonth = receita.getData().withDayOfMonth(1);
@@ -82,7 +85,7 @@ public class ReceitaServiceImplTest {
         @DisplayName("Deve salvar receita no banco de dados")
         @Test
         void it_should_save_receita_on_database() {
-            Receita receitaToSave = mockReceita();
+            Receita receitaToSave = ReceitaMockBuilder.getMock();
             receitaToSave.setId(null);
 
             given(repository.findByDateRangeAndDescricaoAndId(
@@ -92,7 +95,7 @@ public class ReceitaServiceImplTest {
                     anyLong()))
                     .willReturn(List.of());
 
-            given(repository.save(receitaToSave)).willReturn(mockReceita());
+            given(repository.save(receitaToSave)).willReturn(ReceitaMockBuilder.getMock());
 
             Receita result = service.save(receitaToSave);
 
@@ -108,7 +111,7 @@ public class ReceitaServiceImplTest {
         void it_should_throw_exception_if_not_found_entity() {
             Long id = 1L;
 
-            Receita receita = mockReceita();
+            Receita receita = ReceitaMockBuilder.getMock();
 
             given(service.findByID(id)).willReturn(Optional.empty());
 
@@ -119,7 +122,7 @@ public class ReceitaServiceImplTest {
         @DisplayName("Deve verificar se existe receitas concorrentes e lançar exceção se existir")
         @Test
         void it_should_verify_is_exists_concurrent_receitas_and_throws_exception_if_exists() {
-            Receita receita = mockReceita();
+            Receita receita = ReceitaMockBuilder.getMock();
             Long id = 1L;
 
             given(repository.findById(id)).willReturn(Optional.of(receita));
@@ -138,7 +141,7 @@ public class ReceitaServiceImplTest {
         @DisplayName("Deve atualizar entidade no banco de dados")
         @Test
         void it_should_update_entity_on_database() {
-            Receita receita = mockReceita();
+            Receita receita = ReceitaMockBuilder.getMock();
 
             Long id = 1L;
 
@@ -166,7 +169,7 @@ public class ReceitaServiceImplTest {
         @DisplayName("Deve chamar o repositório")
         @Test
         void it_should_call_repository() {
-            Receita receita = mockReceita();
+            Receita receita = ReceitaMockBuilder.getMock();
             Long id = 1L;
 
             service.verifyIfExistsConcurrentReceita(receita, id);
@@ -182,7 +185,7 @@ public class ReceitaServiceImplTest {
         @DisplayName("Deve lançar exceção caso encontre receitas")
         @Test
         void it_should_throw_exception_if_finds_receitas() {
-            Receita receita = mockReceita();
+            Receita receita = ReceitaMockBuilder.getMock();
             Long id = 1L;
 
             given(repository.findByDateRangeAndDescricaoAndId(
@@ -196,8 +199,5 @@ public class ReceitaServiceImplTest {
                     .isInstanceOf(ConcurrentReceitaException.class);
         }
     }
-
-    private static Receita mockReceita() {
-        return new Receita(1L, "Salário", 4000.0, LocalDate.now().withDayOfMonth(5));
-    }
+    
 }

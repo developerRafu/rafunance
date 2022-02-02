@@ -1,7 +1,5 @@
 package br.com.rafunance.rafunance.services;
 
-import br.com.rafunance.rafunance.errors.exceptions.InvalidDespesaException;
-import br.com.rafunance.rafunance.errors.exceptions.InvalidReceitaException;
 import br.com.rafunance.rafunance.models.DespesaCategoria;
 import br.com.rafunance.rafunance.models.dtos.Resumo;
 import br.com.rafunance.rafunance.models.entities.Despesa;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,9 +58,8 @@ public class ResumoServiceImpl implements IResumoService {
     }
 
     private Double calculateSaldo(Double valorReceita, Double valorDespesa) {
-        return valorReceita - valorDespesa;
+        return Double.min(valorReceita, valorDespesa);
     }
-
 
     private Map<DespesaCategoria, Double> calculateDespesaPorCategoria(List<Despesa> despesasByMonth) {
         Map<DespesaCategoria, Double> map = new EnumMap<>(DespesaCategoria.class);
