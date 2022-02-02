@@ -43,4 +43,10 @@ public interface DespesaRepository extends JpaRepository<Despesa, Long> {
 
     @Query("SELECT d FROM Despesa d WHERE d.data BETWEEN :initialDate AND :lastDate")
     List<Despesa> findByDateRange(@Param("initialDate") LocalDate initialDate, @Param("lastDate") LocalDate lastDate);
+
+    @Query("SELECT d FROM Despesa d WHERE 1=1 " +
+            "AND d.data BETWEEN :initialDate AND :lastDate " +
+            "AND d.descricao = :descricao " +
+            "AND (:id IS NULL OR d.id = :id)")
+    List<Despesa> findByDateRangeAndDescricaoAndId(@Param("initialDate") LocalDate initialDate, @Param("lastDate") LocalDate lastDate, @Param("descricao") String descricao, @Param("id") Long id);
 }

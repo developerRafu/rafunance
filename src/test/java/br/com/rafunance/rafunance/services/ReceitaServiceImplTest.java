@@ -63,12 +63,16 @@ public class ReceitaServiceImplTest {
         @Test
         void it_should_throw_exception_if_exists_receita_in_the_month() {
             Receita receita = mockReceita();
+            Long id = null;
+
+            LocalDate dateAsFirstDayOfMonth = receita.getData().withDayOfMonth(1);
+            LocalDate dateAsLastDayOfMonth = receita.getData().withDayOfMonth(receita.getData().lengthOfMonth());
 
             given(repository.findByDateRangeAndDescricaoAndId(
-                    any(LocalDate.class),
-                    any(LocalDate.class),
-                    anyString(),
-                    anyLong()))
+                    dateAsFirstDayOfMonth,
+                    dateAsLastDayOfMonth,
+                    receita.getDescricao(),
+                    id))
                     .willReturn(List.of(receita));
 
             assertThatThrownBy(() -> service.save(receita))

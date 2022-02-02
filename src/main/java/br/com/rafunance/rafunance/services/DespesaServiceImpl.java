@@ -1,5 +1,6 @@
 package br.com.rafunance.rafunance.services;
 
+import br.com.rafunance.rafunance.errors.exceptions.ConcurrentDespesaException;
 import br.com.rafunance.rafunance.errors.exceptions.NotFoundException;
 import br.com.rafunance.rafunance.models.entities.Despesa;
 import br.com.rafunance.rafunance.repositories.DespesaRepository;
@@ -29,24 +30,35 @@ public class DespesaServiceImpl implements IDespesaService {
 
     @Override
     public Despesa save(Despesa obj) {
+        verifyIfExistsConcurrentDespesa(obj);
         return repository.save(obj);
+    }
+
+    private void verifyIfExistsConcurrentDespesa(Despesa obj) {
+        LocalDate dateAsFirstDayOfMonth = obj.getData().withDayOfMonth(1);
+        LocalDate dateAsLastDayOfMonth = dateAsFirstDayOfMonth.withDayOfMonth(dateAsFirstDayOfMonth.lengthOfMonth());
+        boolean thereIsConcurrentDespesa = !repository.findByDateRangeAndDescricaoAndId(dateAsFirstDayOfMonth, dateAsLastDayOfMonth, obj.getDescricao(), null).isEmpty();
+        if (thereIsConcurrentDespesa) {
+            throw new ConcurrentDespesaException("Despesa já cadastrada");
+        }
     }
 
     @Override
     public Despesa update(Despesa obj, Long id) {
-        boolean theresIsEntity = findByID(id).isPresent();
-        if (!theresIsEntity) {
+        verifyIfExistsObject(id);
+        return repository.save(obj);
+    }
+
+    private void verifyIfExistsObject(Long id) {
+        boolean thereIsEntity = findByID(id).isPresent();
+        if (!thereIsEntity) {
             throw new NotFoundException("Objeto não encontrado");
         }
-        return repository.save(obj);
     }
 
     @Override
     public void deleteById(Long id) {
-        boolean theresIsEntity = findByID(id).isPresent();
-        if (!theresIsEntity) {
-            throw new NotFoundException("Objeto não encontrado");
-        }
+        verifyIfExistsObject(id);
         repository.deleteById(id);
     }
 
